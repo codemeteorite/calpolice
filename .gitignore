@@ -1,0 +1,100 @@
+# ============================================
+# CalPolice - .gitignore
+# ============================================
+
+# ---------- Environment Variables ----------
+# NEVER commit secrets, API keys, or credentials
+.env
+.env.*
+.env.local
+.env.*.local
+.env.production
+.env.development
+
+# BUT allow .env.example template files (no secrets)
+!.env.example
+!**/.env.example
+
+# ---------- Node.js ----------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# ---------- Build Outputs ----------
+dist/
+build/
+.vite/
+dist-ssr/
+
+# ---------- Logs ----------
+logs/
+*.log
+error.log
+
+# ---------- Python ----------
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+.venv/
+venv/
+env/
+ENV/
+*.egg-info/
+*.egg
+.eggs/
+.installed.cfg
+MANIFEST
+pip-wheel-metadata/
+share/python-wheels/
+develop-eggs/
+downloads/
+sdist/
+var/
+wheels/
+lib/
+lib64/
+parts/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# ---------- Virtual Environments ----------
+.venv
+venv
+env
+
+# ---------- IDE & Editors ----------
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sw?
+*~
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# ---------- OS Files ----------
+.DS_Store
+Thumbs.db
+Desktop.ini
+ehthumbs.db
+ehthumbs_vista.db
+
+# ---------- MongoDB Local Data ----------
+mongodb_data/
+
+# ---------- Misc ----------
+*.local
+.cache/
+.parcel-cache/
+.turbo/

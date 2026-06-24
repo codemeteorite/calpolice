@@ -1,0 +1,17 @@
+builder = "heroku/buildpacks:20"
+
+[env]
+  NODE_ENV = "production"
+  MONGO_URI = "$MONGO_URI"
+  JWT_SECRET = "$JWT_SECRET"
+  PYTHON_AI_URL = "$PYTHON_AI_URL"
+  AI_SERVICE_URL = "$AI_SERVICE_URL"
+  PORT = "5000"
+
+[env.production]
+  PORT = "5000"
+
+[[services]]
+  type = "web"
+  startCommand = "node index.js"
+  port = 5000

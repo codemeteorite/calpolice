@@ -1,0 +1,26 @@
+[build]
+command = "npm install && npm run build"
+functions = "api"
+publish = "dist"
+
+[build.environment]
+CI = "true"
+
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200
+
+[[headers]]
+for = "/*"
+[headers.values]
+Cache-Control = "public, max-age=3600"
+
+[context.production.environment]
+VITE_API_URL = "https://your-railway-backend.up.railway.app"
+
+[context.deploy-preview.environment]
+VITE_API_URL = "https://your-railway-backend.up.railway.app"
+
+[context.branch-deploy.environment]
+VITE_API_URL = "https://your-railway-backend.up.railway.app"

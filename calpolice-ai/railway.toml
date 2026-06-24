@@ -1,0 +1,12 @@
+[env]
+  FLASK_ENV = "production"
+  GROQ_API_KEY = "$GROQ_API_KEY"
+  FLASK_PORT = "5001"
+
+[env.production]
+  FLASK_PORT = "5001"
+
+[[services]]
+  type = "web"
+  startCommand = "python app.py"
+  port = 5001
