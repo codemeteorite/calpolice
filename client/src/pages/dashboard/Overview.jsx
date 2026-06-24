@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import API from '../../api';
 import { playGulpSound } from '../../utils/audio';
@@ -10,6 +11,7 @@ import TodayMacrosPie from '../../components/TodayMacrosPie';
 
 export default function Overview() {
     const { user } = useAuth();
+    const location = useLocation();
     const [weekly, setWeekly] = useState([]);
     const [macros, setMacros] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -37,7 +39,7 @@ export default function Overview() {
             }
         };
         fetchData();
-    }, []);
+    }, [location.key]);
 
     const handleAddWater = useCallback(async (amount) => {
         // Optimistic update

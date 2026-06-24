@@ -4,6 +4,8 @@ dotenv.config();
 
 const FoodItem = require('./models/FoodItem');
 const Exercise = require('./models/Exercise');
+const User = require('./models/User');
+const bcrypt = require('bcryptjs');
 
 const foods = [
     // Grains - Veg
@@ -75,12 +77,29 @@ async function seed() {
 
         await FoodItem.deleteMany({});
         await Exercise.deleteMany({});
+        await User.deleteMany({});
 
         await FoodItem.insertMany(foods);
         console.log(`✅ Seeded ${foods.length} food items`);
 
         await Exercise.insertMany(exercises);
         console.log(`✅ Seeded ${exercises.length} exercises`);
+
+        const hashedPassword = await bcrypt.hash('password123', 10);
+        const demoUser = new User({
+            name: 'Demo User',
+            email: 'demo@calpolice.com',
+            password: hashedPassword,
+            age: 25,
+            height: 175,
+            weight: 70,
+            gender: 'male',
+            goal: 'maintain',
+            activityLevel: 'moderate',
+            dietPreference: 'both'
+        });
+        await demoUser.save();
+        console.log('✅ Seeded demo user: demo@calpolice.com / password123');
 
         console.log('\n🎉 Database seeded successfully!');
         process.exit(0);

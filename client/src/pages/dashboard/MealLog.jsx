@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import API from '../../api';
 import { playChewSound } from '../../utils/audio';
 
 export default function MealLog() {
+    const location = useLocation();
     const [data, setData] = useState({ meals: [], totalCalories: 0, totalProtein: 0, totalCarbs: 0, totalFat: 0 });
     const [loading, setLoading] = useState(true);
 
@@ -29,7 +31,7 @@ export default function MealLog() {
         }
     };
 
-    useEffect(() => { fetchMeals(); }, []);
+    useEffect(() => { fetchMeals(); }, [location.key]);
 
     const handleAiAnalyze = async (e) => {
         e.preventDefault();

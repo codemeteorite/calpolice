@@ -6,10 +6,10 @@ const rateLimit = require('express-rate-limit');
 const User = require('../models/User');
 
 // ── Auth-specific rate limiter ─────────────────────────────────────────────
-// Much tighter than the global limiter: 10 requests per 15 minutes per IP
+// Much tighter than the global limiter: 10 requests per 15 minutes per IP (higher in dev)
 const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 10,
+    max: process.env.NODE_ENV === 'production' ? 10 : 1000,
     message: { message: 'Too many auth attempts, please try again in 15 minutes.' },
     standardHeaders: true,
     legacyHeaders: false,
@@ -67,6 +67,7 @@ router.post('/signup', authLimiter, async (req, res) => {
             }
         });
     } catch (err) {
+        console.error('[AUTH ERROR signup]:', err);
         res.status(500).json({ message: 'Server error during signup.' });
     }
 });
@@ -105,6 +106,7 @@ router.post('/login', authLimiter, async (req, res) => {
             }
         });
     } catch (err) {
+        console.error('[AUTH ERROR login]:', err);
         res.status(500).json({ message: 'Server error during login.' });
     }
 });

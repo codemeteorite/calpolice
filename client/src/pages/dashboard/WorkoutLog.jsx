@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import API from '../../api';
 
 export default function WorkoutLog() {
+    const location = useLocation();
     const [data, setData] = useState({ logs: [], totalBurned: 0 });
     const [loading, setLoading] = useState(true);
 
@@ -16,7 +18,7 @@ export default function WorkoutLog() {
         }
     };
 
-    useEffect(() => { fetchLogs(); }, []);
+    useEffect(() => { fetchLogs(); }, [location.key]);
 
     const handleDelete = async (id) => {
         if (!window.confirm('Delete this workout log?')) return;

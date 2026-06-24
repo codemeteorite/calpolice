@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import API from '../../api';
 
 export default function Feed() {
     const { user } = useAuth();
+    const location = useLocation();
     const [posts, setPosts] = useState([]);
     const [content, setContent] = useState('');
     const [loading, setLoading] = useState(true);
@@ -23,7 +25,7 @@ export default function Feed() {
 
     useEffect(() => {
         fetchPosts();
-    }, []);
+    }, [location.key]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
