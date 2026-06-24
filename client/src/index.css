@@ -1495,12 +1495,19 @@ textarea {
     background: rgba(8, 8, 14, 0.97);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    justify-content: space-around;
+    justify-content: flex-start;
     align-items: center;
     border-radius: 0;
     gap: 0;
     overflow-x: auto;
     overflow-y: hidden;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Hide scrollbar for Firefox */
+  }
+
+  .sidebar::-webkit-scrollbar {
+    display: none; /* Hide scrollbar for Chrome/Safari */
   }
 
   /* hide non-tab elements */
@@ -1517,11 +1524,11 @@ textarea {
     justify-content: center;
     gap: 3px;
     padding: 8px 6px;
-    min-width: 52px;
+    min-width: 80px;
     border-radius: 12px;
     font-size: 0.62rem;
-    flex: 1;
-    max-width: 72px;
+    flex: 0 0 24%; /* Show ~4.1 items, allowing next to peek and show it is slidable */
+    max-width: none;
     margin-bottom: 0;
   }
 
@@ -1833,15 +1840,6 @@ textarea {
 
   .ai-result-grid {
     grid-template-columns: 1fr 1fr;
-  }
-
-  .nav-item {
-    min-width: 44px;
-    padding: 6px 4px;
-  }
-
-  .nav-item > span:last-child:not(.nav-icon) {
-    display: none;
   }
 }
 

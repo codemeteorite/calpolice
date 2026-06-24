@@ -5,6 +5,11 @@ dotenv.config();
 const FoodItem = require('./models/FoodItem');
 const Exercise = require('./models/Exercise');
 const User = require('./models/User');
+const MealLog = require('./models/MealLog');
+const ExerciseLog = require('./models/ExerciseLog');
+const WaterLog = require('./models/WaterLog');
+const WellnessLog = require('./models/WellnessLog');
+const Post = require('./models/Post');
 const bcrypt = require('bcryptjs');
 
 const foods = [
@@ -78,6 +83,12 @@ async function seed() {
         await FoodItem.deleteMany({});
         await Exercise.deleteMany({});
         await User.deleteMany({});
+        await MealLog.deleteMany({});
+        await ExerciseLog.deleteMany({});
+        await WaterLog.deleteMany({});
+        await WellnessLog.deleteMany({});
+        await Post.deleteMany({});
+        console.log('✅ Cleaned up old logs and posts');
 
         await FoodItem.insertMany(foods);
         console.log(`✅ Seeded ${foods.length} food items`);
