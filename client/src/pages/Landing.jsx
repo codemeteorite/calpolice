@@ -16,7 +16,7 @@ export default function Landing() {
                 <div className="landing-logo">
                     <span>🔥</span> CalPolice
                 </div>
-                <div style={{ display: 'flex', gap: '12px' }}>
+                <div className="landing-nav-btns">
                     <Link to="/login"><button className="btn-secondary" style={{ padding: '9px 22px' }}>Log In</button></Link>
                     <Link to="/signup"><button className="btn-primary" style={{ padding: '9px 22px' }}>Get Started</button></Link>
                 </div>

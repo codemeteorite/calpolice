@@ -12,10 +12,10 @@ import DayHistory from './DayHistory';
 
 const navItems = [
     { path: 'overview', icon: '📊', label: 'Overview' },
-    { path: 'meals', icon: '🍽️', label: 'Meal Log' },
-    { path: 'food', icon: '🥗', label: 'Food Recs' },
+    { path: 'meals', icon: '🍽️', label: 'Meals' },
+    { path: 'food', icon: '🥗', label: 'Food' },
     { path: 'exercises', icon: '🏋️', label: 'Exercises' },
-    { path: 'workouts', icon: '🏃', label: 'Workout Log' },
+    { path: 'workouts', icon: '🏃', label: 'Workouts' },
     { path: 'history', icon: '📅', label: 'History' },
     { path: 'feed', icon: '💬', label: 'Community' },
     { path: 'profile', icon: '👤', label: 'Profile' },
@@ -54,6 +54,35 @@ export default function Dashboard() {
 
     return (
         <div className="dashboard-layout">
+            {/* ── Mobile top bar (hidden on desktop / tablet) ── */}
+            <div className="mobile-topbar">
+                <div className="mobile-logo">
+                    <span>🔥</span> CalPolice
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <span className="mobile-user">{user?.name?.split(' ')[0]}</span>
+                    <button
+                        onClick={handleLogout}
+                        style={{
+                            background: 'rgba(255,255,255,0.06)',
+                            border: '1px solid rgba(255,255,255,0.1)',
+                            borderRadius: 8,
+                            cursor: 'pointer',
+                            fontSize: '0.9rem',
+                            color: 'var(--text-muted)',
+                            padding: '5px 10px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 4,
+                            transition: 'all 0.2s ease',
+                        }}
+                        title="Logout"
+                    >
+                        🚪
+                    </button>
+                </div>
+            </div>
+
             <aside className="sidebar">
                 <div className="sidebar-logo">
                     <div className="logo-icon">🔥</div>
@@ -68,13 +97,13 @@ export default function Dashboard() {
                         className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
                     >
                         <span className="nav-icon">{item.icon}</span>
-                        {item.label}
+                        <span>{item.label}</span>
                     </NavLink>
                 ))}
 
                 <div className="sidebar-user" style={{ marginTop: 'auto' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-                        <div>
+                        <div className="user-details">
                             <div className="user-name">{user?.name || 'User'}</div>
                             <div className="user-goal">{user?.goal?.replace(/_/g, ' ')}</div>
                         </div>

@@ -95,7 +95,7 @@ export default function MealLog() {
 
     return (
         <div>
-            <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div className="page-header meal-log-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
                     <h1>Meal Log 🍽️</h1>
                     <p>Track today's food intake and get AI analysis</p>

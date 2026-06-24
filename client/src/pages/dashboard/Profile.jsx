@@ -124,7 +124,8 @@ export default function Profile() {
                         <h2 style={{ fontSize: '1.2rem', marginBottom: 24 }}>Edit Settings</h2>
 
                         <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
+                            {/* Responsive 3→2→1 col grid */}
+                            <div className="profile-settings-grid">
                                 <div className="form-group">
                                     <label>Age</label>
                                     <input className="form-input" name="age" type="number" value={form.age || ''} onChange={handleChange} required />
@@ -183,17 +184,17 @@ export default function Profile() {
                         ) : (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                                 {user.favoriteMeals.map((meal, index) => (
-                                    <div key={index} style={{ padding: '16px', background: 'var(--bg-lighter)', borderRadius: 12, border: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                        <div>
+                                    <div key={index} className="fav-meal-card">
+                                        <div className="fav-meal-info">
                                             <div style={{ fontWeight: 600, fontSize: '1rem', marginBottom: 4 }}>{meal.name}</div>
-                                            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'flex', gap: 12 }}>
+                                            <div className="fav-meal-macros">
                                                 <span style={{ color: 'var(--accent-green)' }}>{meal.calories} kcal</span>
                                                 <span style={{ color: '#e07b54' }}>{meal.protein}g P</span>
                                                 <span style={{ color: '#c8a951' }}>{meal.carbs}g C</span>
                                                 <span style={{ color: '#7ec8a4' }}>{meal.fat}g F</span>
                                             </div>
                                         </div>
-                                        <div style={{ display: 'flex', gap: 8 }}>
+                                        <div className="fav-meal-actions">
                                             <button className="btn-secondary" style={{ padding: '8px 12px', fontSize: '0.85rem' }} onClick={() => handleLogFavorite(meal)}>
                                                 + Log
                                             </button>
