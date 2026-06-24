@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🔥 CalPolice
+# CalPolice.ai
 
 ### AI-Powered Calorie Tracker & Fitness Intelligence Platform
 
