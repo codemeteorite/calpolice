@@ -56,7 +56,7 @@ export default function DayHistory() {
     return (
         <div>
             <div className="page-header">
-                <h1>Daily History 📅</h1>
+                <h1>Daily History</h1>
                 <p>View your nutrition and water intake for any day</p>
             </div>
 
@@ -119,7 +119,7 @@ export default function DayHistory() {
 
                     {/* Water Section */}
                     <div className="stat-card glass" style={{ padding: 24 }}>
-                        <h2 style={{ marginBottom: 16, fontSize: '1.1rem' }}>💧 Hydration</h2>
+                        <h2 style={{ marginBottom: 16, fontSize: '1.1rem' }}>Hydration</h2>
                         <div style={{ marginBottom: 16 }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
                                 <span>{data.water.totalWaterMl}ml</span>

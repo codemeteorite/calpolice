@@ -80,7 +80,7 @@ export default function Overview() {
     return (
         <div>
             <div className="page-header">
-                <h1>Welcome, {user?.name?.split(' ')[0]} 👋</h1>
+                <h1>Welcome, {user?.name?.split(' ')[0]}</h1>
                 <p>Here's how you're tracking towards your {target} kcal daily goal.</p>
             </div>
 
@@ -108,7 +108,7 @@ export default function Overview() {
 
             <div className="recent-activity-section" style={{ marginTop: 30 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                    <h2 style={{ fontSize: '1.2rem' }}>Recent Workouts 🏃</h2>
+                    <h2 style={{ fontSize: '1.2rem' }}>Recent Workouts</h2>
                     <button className="btn-secondary" style={{ padding: '4px 12px', fontSize: '0.8rem' }} onClick={() => window.location.hash = '#/dashboard/workouts'}>View All</button>
                 </div>
                 {workouts.length === 0 ? (

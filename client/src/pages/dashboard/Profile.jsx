@@ -75,7 +75,7 @@ export default function Profile() {
     return (
         <div>
             <div className="page-header">
-                <h1>Your Profile 👤</h1>
+                <h1>Your Profile</h1>
                 <p>Manage your health data and application settings</p>
             </div>
 
@@ -178,7 +178,7 @@ export default function Profile() {
                     </div>
 
                     <div className="profile-card" style={{ textAlign: 'left', marginTop: 24 }}>
-                        <h2 style={{ fontSize: '1.2rem', marginBottom: 16 }}>❤️ Liked Meals</h2>
+                        <h2 style={{ fontSize: '1.2rem', marginBottom: 16 }}>Liked Meals</h2>
                         {(!user.favoriteMeals || user.favoriteMeals.length === 0) ? (
                             <p style={{ color: 'var(--text-secondary)' }}>You haven't liked any meals yet! Go to Food Recommendations to find meals you like.</p>
                         ) : (

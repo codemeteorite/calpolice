@@ -10,9 +10,12 @@ export default function WorkoutLog() {
     const fetchLogs = async () => {
         try {
             const res = await API.get('/exercises/today');
-            setData(res.data);
+            const logs = Array.isArray(res.data?.logs) ? res.data.logs : [];
+            const totalBurned = Number(res.data?.totalBurned || 0);
+            setData({ logs, totalBurned });
         } catch (err) {
             console.error(err);
+            setData({ logs: [], totalBurned: 0 });
         } finally {
             setLoading(false);
         }
@@ -34,7 +37,7 @@ export default function WorkoutLog() {
         <div>
             <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
-                    <h1>Workout Log 🏋️</h1>
+                    <h1>Workout Log</h1>
                     <p>Manage today's exercises and calories burned</p>
                 </div>
                 <div style={{ textAlign: 'right' }}>
@@ -47,7 +50,7 @@ export default function WorkoutLog() {
                 <div className="loading-spinner"><div className="spinner" /> Loading workouts...</div>
             ) : data.logs.length === 0 ? (
                 <div className="empty-state">
-                    <div className="empty-icon">🏃</div>
+                    <div className="empty-icon">No workouts yet</div>
                     <p>No workouts logged today. Head over to the Exercises page to log your progress!</p>
                 </div>
             ) : (

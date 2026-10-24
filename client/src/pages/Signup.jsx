@@ -45,7 +45,7 @@ export default function Signup() {
         <div className="auth-container">
             <div className="auth-card" style={{ maxWidth: 520 }}>
                 <div className="auth-logo">
-                    <div className="logo-icon">🔥</div>
+                    <div className="logo-icon">C</div>
                     <span className="logo-text">CalPolice</span>
                 </div>
 
@@ -116,9 +116,9 @@ export default function Signup() {
                             <div className="form-group">
                                 <label>Your Goal</label>
                                 <select className="form-input" value={form.goal} onChange={e => set('goal', e.target.value)}>
-                                    <option value="lose_weight">🔥 Lose Weight</option>
-                                    <option value="gain_weight">💪 Gain Weight / Muscle</option>
-                                    <option value="maintain">⚖️ Maintain Weight</option>
+                                    <option value="lose_weight">Lose Weight</option>
+                                    <option value="gain_weight">Gain Weight / Muscle</option>
+                                    <option value="maintain">Maintain Weight</option>
                                 </select>
                             </div>
                             <div className="form-group">
@@ -134,9 +134,9 @@ export default function Signup() {
                             <div className="form-group">
                                 <label>Diet Preference</label>
                                 <select className="form-input" value={form.dietPreference} onChange={e => set('dietPreference', e.target.value)}>
-                                    <option value="veg">🥦 Vegetarian</option>
-                                    <option value="non_veg">🍗 Non-Vegetarian</option>
-                                    <option value="both">🍽️ Both</option>
+                                    <option value="veg">Vegetarian</option>
+                                    <option value="non_veg">Non-Vegetarian</option>
+                                    <option value="both">No Restriction</option>
                                 </select>
                             </div>
                         </>
@@ -150,7 +150,7 @@ export default function Signup() {
                             <button className="btn-primary" onClick={nextStep} style={{ flex: 2 }}>Continue →</button>
                         ) : (
                             <button className="btn-primary" onClick={handleSubmit} disabled={loading} style={{ flex: 2 }}>
-                                {loading ? 'Creating account...' : '🚀 Create Account'}
+                                {loading ? 'Creating account...' : 'Create Account'}
                             </button>
                         )}
                     </div>

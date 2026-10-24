@@ -4,15 +4,15 @@ const StressTracker = ({ stressLevel, handleUpdateStress }) => {
     return (
         <div className="stat-card glass" style={{ border: '1px solid var(--accent-orange-dim)', padding: 24 }}>
             <div className="stat-label" style={{ color: 'var(--accent-orange)', display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.9rem', fontWeight: 600, marginBottom: 15 }}>
-                <span style={{ fontSize: '1.2rem' }}>🧠</span> Stress & Cortisol
+                Stress & Cortisol
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}>
                 {[
-                    { l: 2, e: '😊', t: 'Calm' },
-                    { l: 4, e: '😐', t: 'Steady' },
-                    { l: 6, e: '😟', t: 'Tense' },
-                    { l: 8, e: '😫', t: 'Stressed' },
-                    { l: 10, e: '🌋', t: 'Burnout' }
+                    { l: 2, e: 'C', t: 'Calm' },
+                    { l: 4, e: 'S', t: 'Steady' },
+                    { l: 6, e: 'T', t: 'Tense' },
+                    { l: 8, e: 'H', t: 'Stressed' },
+                    { l: 10, e: 'B', t: 'Burnout' }
                 ].map(s => (
                     <button
                         key={s.l}

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { NavLink, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { applyStoredTheme, getStoredTheme, readExerciseRecommendationCache, readFoodRecommendationCache, saveExerciseRecommendationCache, saveFoodRecommendationCache } from '../../utils/storage';
 import Overview from './Overview';
 import MealLog from './MealLog';
 import FoodRecommendations from './FoodRecommendations';
@@ -11,44 +12,82 @@ import WorkoutLog from './WorkoutLog';
 import DayHistory from './DayHistory';
 
 const navItems = [
-    { path: 'overview', icon: '📊', label: 'Overview' },
-    { path: 'meals', icon: '🍽️', label: 'Meals' },
-    { path: 'food', icon: '🥗', label: 'Food' },
-    { path: 'exercises', icon: '🏋️', label: 'Exercises' },
-    { path: 'workouts', icon: '🏃', label: 'Workouts' },
-    { path: 'history', icon: '📅', label: 'History' },
-    { path: 'feed', icon: '💬', label: 'Community' },
-    { path: 'profile', icon: '👤', label: 'Profile' },
+    { path: 'overview', icon: 'OV', label: 'Overview' },
+    { path: 'meals', icon: 'ME', label: 'Meals' },
+    { path: 'food', icon: 'FD', label: 'Food' },
+    { path: 'exercises', icon: 'EX', label: 'Exercises' },
+    { path: 'workouts', icon: 'WT', label: 'Workouts' },
+    { path: 'history', icon: 'HI', label: 'History' },
+    { path: 'feed', icon: 'CM', label: 'Community' },
+    { path: 'profile', icon: 'PR', label: 'Profile' },
 ];
 
 export default function Dashboard() {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
+    const userId = user?.id || user?._id || null;
 
-    // Lifted AI state — survives tab switches and page refreshes
+    const [theme, setTheme] = useState(getStoredTheme);
+
+    useEffect(() => {
+        const nextTheme = applyStoredTheme(theme);
+        try {
+            localStorage.setItem('calpolice:v1:theme', nextTheme);
+        } catch {
+            // ignore storage failures
+        }
+    }, [theme]);
+
     const [aiSuggestions, setAiSuggestions] = useState(() => {
-        const saved = localStorage.getItem('cp_ai_foods');
-        return saved ? JSON.parse(saved) : [];
+        if (!userId) return [];
+        return readFoodRecommendationCache(userId).suggestions;
     });
     const [wellnessAdvice, setWellnessAdvice] = useState(() => {
-        return localStorage.getItem('cp_ai_advice') || '';
+        if (!userId) return '';
+        return readFoodRecommendationCache(userId).wellnessAdvice;
     });
     const [aiExercises, setAiExercises] = useState(() => {
-        const saved = localStorage.getItem('cp_ai_exercises');
-        return saved ? JSON.parse(saved) : [];
+        if (!userId) return [];
+        return readExerciseRecommendationCache(userId);
     });
+    const [recommendationOwnerId, setRecommendationOwnerId] = useState(userId);
 
     useEffect(() => {
-        localStorage.setItem('cp_ai_foods', JSON.stringify(aiSuggestions));
-    }, [aiSuggestions]);
+        if (!userId) {
+            setAiSuggestions([]);
+            setWellnessAdvice('');
+            setAiExercises([]);
+            setRecommendationOwnerId(null);
+            return;
+        }
+
+        if (recommendationOwnerId === userId) return;
+
+        const storedFood = readFoodRecommendationCache(userId);
+        setAiSuggestions(storedFood.suggestions);
+        setWellnessAdvice(storedFood.wellnessAdvice);
+        setAiExercises(readExerciseRecommendationCache(userId));
+        setRecommendationOwnerId(userId);
+    }, [userId, recommendationOwnerId]);
 
     useEffect(() => {
-        localStorage.setItem('cp_ai_advice', wellnessAdvice);
-    }, [wellnessAdvice]);
+        if (!userId || recommendationOwnerId !== userId) return;
+        if (aiSuggestions.length || wellnessAdvice) {
+            saveFoodRecommendationCache(userId, aiSuggestions, wellnessAdvice);
+        }
+    }, [userId, recommendationOwnerId, aiSuggestions, wellnessAdvice]);
 
     useEffect(() => {
-        localStorage.setItem('cp_ai_exercises', JSON.stringify(aiExercises));
-    }, [aiExercises]);
+        if (!userId || recommendationOwnerId !== userId) return;
+        if (aiExercises.length) {
+            saveExerciseRecommendationCache(userId, aiExercises);
+        }
+    }, [userId, recommendationOwnerId, aiExercises]);
+
+    const recommendationsReady = Boolean(userId && recommendationOwnerId === userId);
+    const visibleAiSuggestions = recommendationsReady ? aiSuggestions : [];
+    const visibleWellnessAdvice = recommendationsReady ? wellnessAdvice : '';
+    const visibleAiExercises = recommendationsReady ? aiExercises : [];
 
     const handleLogout = () => { logout(); navigate('/'); };
 
@@ -57,7 +96,7 @@ export default function Dashboard() {
             {/* ── Mobile top bar (hidden on desktop / tablet) ── */}
             <div className="mobile-topbar">
                 <div className="mobile-logo">
-                    <span>🔥</span> CalPolice
+                    <span>C</span> CalPolice
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                     <span className="mobile-user">{user?.name?.split(' ')[0]}</span>
@@ -68,7 +107,7 @@ export default function Dashboard() {
                             border: '1px solid rgba(255,255,255,0.1)',
                             borderRadius: 8,
                             cursor: 'pointer',
-                            fontSize: '0.9rem',
+                            fontSize: '0.8rem',
                             color: 'var(--text-muted)',
                             padding: '5px 10px',
                             display: 'flex',
@@ -78,14 +117,14 @@ export default function Dashboard() {
                         }}
                         title="Logout"
                     >
-                        🚪
+                        OUT
                     </button>
                 </div>
             </div>
 
             <aside className="sidebar">
                 <div className="sidebar-logo">
-                    <div className="logo-icon">🔥</div>
+                    <div className="logo-icon">C</div>
                     <span className="logo-text">CalPolice</span>
                 </div>
 
@@ -101,6 +140,17 @@ export default function Dashboard() {
                     </NavLink>
                 ))}
 
+                <div style={{ marginTop: 8, marginBottom: 16 }}>
+                    <button
+                        type="button"
+                        className="btn-secondary"
+                        onClick={() => setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'))}
+                        style={{ width: '100%', justifyContent: 'center', display: 'flex', alignItems: 'center', gap: 8 }}
+                    >
+                        <span>{theme === 'dark' ? '☀️ Light' : '🌙 Dark'}</span>
+                    </button>
+                </div>
+
                 <div className="sidebar-user" style={{ marginTop: 'auto' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
                         <div className="user-details">
@@ -109,9 +159,9 @@ export default function Dashboard() {
                         </div>
                         <button
                             onClick={handleLogout}
-                            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1rem', color: 'var(--text-muted)', padding: '4px' }}
+                            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.8rem', color: 'var(--text-muted)', padding: '4px' }}
                             title="Logout"
-                        >🚪</button>
+                        >OUT</button>
                     </div>
                 </div>
             </aside>
@@ -123,15 +173,15 @@ export default function Dashboard() {
                     <Route path="meals" element={<MealLog />} />
                     <Route path="food" element={
                         <FoodRecommendations
-                            cachedAiSuggestions={aiSuggestions}
+                            cachedAiSuggestions={visibleAiSuggestions}
                             setCachedAiSuggestions={setAiSuggestions}
-                            cachedWellnessAdvice={wellnessAdvice}
+                            cachedWellnessAdvice={visibleWellnessAdvice}
                             setCachedWellnessAdvice={setWellnessAdvice}
                         />
                     } />
                     <Route path="exercises" element={
                         <Exercises
-                            cachedAiExercises={aiExercises}
+                            cachedAiExercises={visibleAiExercises}
                             setCachedAiExercises={setAiExercises}
                         />
                     } />

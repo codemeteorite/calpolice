@@ -1,31 +1,68 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState } from 'react';
+import { clearRecommendationCaches } from '../utils/storage';
 
 const AuthContext = createContext(null);
 
-export function AuthProvider({ children }) {
-    const [user, setUser] = useState(null);
-    const [token, setToken] = useState(localStorage.getItem('cp_token'));
+const getStoredAuth = () => {
+    try {
+        const token = localStorage.getItem('cp_token');
+        const storedUser = localStorage.getItem('cp_user');
+        const parsedUser = storedUser ? JSON.parse(storedUser) : null;
+        if (!parsedUser || typeof parsedUser !== 'object' || Array.isArray(parsedUser)) {
+            return { token, user: null };
+        }
+        const userId = parsedUser?.id || parsedUser?._id;
 
-    useEffect(() => {
-        const stored = localStorage.getItem('cp_user');
-        if (stored) setUser(JSON.parse(stored));
-    }, []);
+        return {
+            token,
+            user: parsedUser && userId ? { ...parsedUser, id: String(userId) } : parsedUser,
+        };
+    } catch {
+        return { token: null, user: null };
+    }
+};
+
+const normalizeUser = (userData) => {
+    if (!userData || typeof userData !== 'object') return userData;
+    const userId = userData.id || userData._id;
+    return userId ? { ...userData, id: String(userId) } : userData;
+};
+
+export function AuthProvider({ children }) {
+    const [storedAuth] = useState(getStoredAuth);
+    const [user, setUser] = useState(storedAuth.user);
+    const [token, setToken] = useState(storedAuth.token);
 
     const login = (userData, tokenVal) => {
-        setUser(userData);
+        const normalizedUser = normalizeUser(userData);
+        setUser(normalizedUser);
         setToken(tokenVal);
-        localStorage.setItem('cp_token', tokenVal);
-        localStorage.setItem('cp_user', JSON.stringify(userData));
+        try {
+            localStorage.setItem('cp_token', tokenVal);
+            localStorage.setItem('cp_user', JSON.stringify(normalizedUser));
+        } catch {
+            // Keep the in-memory session active if browser storage is unavailable.
+        }
     };
 
     const logout = () => {
+        let currentUserId = user?.id || user?._id;
+        try {
+            const storedUser = JSON.parse(localStorage.getItem('cp_user') || 'null');
+            currentUserId = currentUserId || storedUser?.id || storedUser?._id;
+        } catch {
+            currentUserId = currentUserId || null;
+        }
+
         setUser(null);
         setToken(null);
-        localStorage.removeItem('cp_token');
-        localStorage.removeItem('cp_user');
-        localStorage.removeItem('cp_ai_foods');
-        localStorage.removeItem('cp_ai_advice');
-        localStorage.removeItem('cp_ai_exercises');
+        try {
+            localStorage.removeItem('cp_token');
+            localStorage.removeItem('cp_user');
+        } catch {
+            // Keep logout functional if browser storage is unavailable.
+        }
+        clearRecommendationCaches(currentUserId);
     };
 
     return (

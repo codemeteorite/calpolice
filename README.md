@@ -178,6 +178,16 @@ cp calpolice-ai/.env.example calpolice-ai/.env
 
 Fill in your real values in each `.env` file.
 
+```env
+# server/.env
+AI_RATE_LIMIT_MAX=8
+AI_RATE_LIMIT_WINDOW_MS=900000
+
+# optional: tune this if you want stricter or looser AI throttling
+# AI_RATE_LIMIT_MAX=5
+# AI_RATE_LIMIT_WINDOW_MS=600000
+```
+
 ### 3. Install dependencies
 
 ```bash

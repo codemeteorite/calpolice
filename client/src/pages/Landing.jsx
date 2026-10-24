@@ -1,12 +1,12 @@
 import { Link } from 'react-router-dom';
 
 const features = [
-    { icon: '🍽️', title: 'Meal Logging', desc: 'Track every meal with detailed macro breakdowns. Log breakfast, lunch, dinner and snacks effortlessly.' },
-    { icon: '🤖', title: 'AI Food Analyzer', desc: 'Just type what you ate in plain language — our Groq AI instantly estimates calories and gives feedback.' },
-    { icon: '📊', title: 'Progress Charts', desc: 'Visual weekly bar charts and daily macro pie charts to see exactly how you\'re tracking your goals.' },
-    { icon: '🥗', title: 'Smart Food Recs', desc: 'Personalized veg and non-veg food recommendations based on your goal and dietary preferences.' },
-    { icon: '🏋️', title: 'Exercise Guide', desc: 'Curated workout videos with YouTube previews. From HIIT to yoga, filtered by your fitness goal.' },
-    { icon: '🧬', title: 'Science-Based Target', desc: 'Calorie targets auto-calculated using the Mifflin-St Jeor formula based on your age, weight, and goal.' },
+    { icon: 'ML', title: 'Meal Logging', desc: 'Track every meal with detailed macro breakdowns. Log breakfast, lunch, dinner and snacks effortlessly.' },
+    { icon: 'AI', title: 'AI Food Analyzer', desc: 'Just type what you ate in plain language — our Groq AI instantly estimates calories and gives feedback.' },
+    { icon: 'CH', title: 'Progress Charts', desc: 'Visual weekly bar charts and daily macro pie charts to see exactly how you\'re tracking your goals.' },
+    { icon: 'FD', title: 'Smart Food Recs', desc: 'Personalized veg and non-veg food recommendations based on your goal and dietary preferences.' },
+    { icon: 'EX', title: 'Exercise Guide', desc: 'Curated workout videos with YouTube previews. From HIIT to yoga, filtered by your fitness goal.' },
+    { icon: 'SC', title: 'Science-Based Target', desc: 'Calorie targets auto-calculated using the Mifflin-St Jeor formula based on your age, weight, and goal.' },
 ];
 
 export default function Landing() {
@@ -14,7 +14,7 @@ export default function Landing() {
         <div className="landing">
             <nav className="landing-nav">
                 <div className="landing-logo">
-                    <span>🔥</span> CalPolice
+                    <span>C</span> CalPolice
                 </div>
                 <div className="landing-nav-btns">
                     <Link to="/login"><button className="btn-secondary" style={{ padding: '9px 22px' }}>Log In</button></Link>
@@ -24,7 +24,7 @@ export default function Landing() {
 
             <section className="hero-section">
                 <div className="hero-badge">
-                    <span>✨</span> AI-Powered Calorie Tracking
+                    AI-Powered Calorie Tracking
                 </div>
                 <h1 className="hero-title">
                     Take Control of<br />

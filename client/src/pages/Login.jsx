@@ -47,7 +47,7 @@ export default function Login() {
         <div className="auth-container">
             <div className="auth-card">
                 <div className="auth-logo">
-                    <div className="logo-icon">🔥</div>
+                    <div className="logo-icon">C</div>
                     <span className="logo-text">CalPolice</span>
                 </div>
                 <h1 className="auth-title">Welcome back</h1>

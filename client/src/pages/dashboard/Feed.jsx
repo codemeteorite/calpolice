@@ -53,7 +53,7 @@ export default function Feed() {
     return (
         <div>
             <div className="page-header">
-                <h1>Community Feed 💬</h1>
+                <h1>Community Feed</h1>
                 <p>Share your progress, tips, or just say hello to other CalPolice members!</p>
             </div>
 

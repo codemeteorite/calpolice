@@ -8,6 +8,8 @@ export default function MealLog() {
     const [data, setData] = useState({ meals: [], totalCalories: 0, totalProtein: 0, totalCarbs: 0, totalFat: 0 });
     const [loading, setLoading] = useState(true);
 
+    const MEAL_CACHE_KEY = 'cp_meal_cache';
+
     // AI Form state
     const [aiInput, setAiInput] = useState('');
     const [aiLoading, setAiLoading] = useState(false);
@@ -20,12 +22,51 @@ export default function MealLog() {
     const [foodName, setFoodName] = useState('');
     const [calories, setCalories] = useState('');
 
+    const hydrateMealCache = (nextMeals) => {
+        const totals = Array.isArray(nextMeals) ? nextMeals.reduce((sum, meal) => {
+            sum.totalCalories += Number(meal.totalCalories || 0);
+            sum.totalProtein += Number(meal.totalProtein || 0);
+            sum.totalCarbs += Number(meal.totalCarbs || 0);
+            sum.totalFat += Number(meal.totalFat || 0);
+            return sum;
+        }, { totalCalories: 0, totalProtein: 0, totalCarbs: 0, totalFat: 0 }) : { totalCalories: 0, totalProtein: 0, totalCarbs: 0, totalFat: 0 };
+
+        const summary = {
+            meals: Array.isArray(nextMeals) ? nextMeals : [],
+            totalCalories: totals.totalCalories,
+            totalProtein: totals.totalProtein,
+            totalCarbs: totals.totalCarbs,
+            totalFat: totals.totalFat
+        };
+
+        setData(summary);
+        localStorage.setItem(MEAL_CACHE_KEY, JSON.stringify(summary));
+    };
+
     const fetchMeals = async () => {
         try {
-            const res = await API.get('/meals/today');
-            setData(res.data);
+            const cached = localStorage.getItem(MEAL_CACHE_KEY);
+            if (cached) {
+                const parsed = JSON.parse(cached);
+                if (parsed && Array.isArray(parsed.meals)) {
+                    setData(parsed);
+                }
+            }
+
+            const res = await API.get('/meals');
+            const meals = Array.isArray(res.data) ? res.data : [];
+            hydrateMealCache(meals);
         } catch (err) {
             console.error(err);
+            const cached = localStorage.getItem(MEAL_CACHE_KEY);
+            if (cached) {
+                try {
+                    const parsed = JSON.parse(cached);
+                    if (parsed && Array.isArray(parsed.meals)) setData(parsed);
+                } catch (cacheErr) {
+                    console.error(cacheErr);
+                }
+            }
         } finally {
             setLoading(false);
         }
@@ -99,7 +140,7 @@ export default function MealLog() {
         <div>
             <div className="page-header meal-log-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
-                    <h1>Meal Log 🍽️</h1>
+                    <h1>Meal Log</h1>
                     <p>Track today's food intake and get AI analysis</p>
                 </div>
                 <div style={{ textAlign: 'right' }}>
@@ -109,7 +150,7 @@ export default function MealLog() {
             </div>
 
             <div className="ai-panel">
-                <h3>✨ AI Food Analyzer</h3>
+                <h3>AI Food Analyzer</h3>
                 <p>Type what you ate in plain English. Groq AI will estimate calories and macros instantly.</p>
 
                 <form onSubmit={handleAiAnalyze} className="ai-input-row">
@@ -189,7 +230,7 @@ export default function MealLog() {
                 <div className="loading-spinner"><div className="spinner" /> Loading meals...</div>
             ) : data.meals.length === 0 ? (
                 <div className="empty-state">
-                    <div className="empty-icon">🍽️</div>
+                    <div className="empty-icon">No meals yet</div>
                     <p>No meals logged today. Use the AI analyzer above to start tracking!</p>
                 </div>
             ) : (
