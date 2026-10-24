@@ -19,16 +19,97 @@ client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 MODEL = "llama-3.3-70b-versatile"
 
+FALLBACK_JOKES = [
+    "Why did the coffee file a complaint? It was feeling brewed up.",
+    "I told my fitness tracker I was tired. It said, 'That's a step in the right direction.'",
+    "My scale and I had a disagreement. It said I was too heavy, I said I was just well-rounded.",
+    "Why do programmers prefer dark mode? Because light attracts bugs.",
+    "I tried to eat healthy at the gym. It was a bit of a protein mismatch.",
+    "The smoothie and I broke up. It said I was too much to blend with.",
+    "My water bottle told me to stay hydrated. I said, 'I’m trying, it’s a lot of pressure.'",
+    "I signed up for a marathon of naps. I think I’m in the recovery phase.",
+    "My fridge said I need more greens. I told it, 'I’m trying, but the snacks keep filing a report.'",
+]
+
 
 def clean_json(content):
-    content = content.strip()
-    if content.startswith("```"):
-        parts = content.split("```")
-        if len(parts) >= 3:
-            content = parts[1]
-            if content.startswith("json"):
-                content = content[4:]
+    if content is None:
+        return ""
+    content = str(content).strip()
+    content = re.sub(r"^```(?:json)?\s*", "", content, flags=re.IGNORECASE)
+    content = re.sub(r"\s*```$", "", content, flags=re.IGNORECASE)
+    if content.startswith("json"):
+        content = content[4:].lstrip()
+
+    start = content.find("{")
+    end = content.rfind("}")
+    if start != -1 and end != -1 and end > start:
+        content = content[start:end + 1]
     return content.strip()
+
+
+def fallback_food_suggestions(goal, is_veg):
+    goal_key = goal.lower()
+    if is_veg:
+        suggestions = [
+            {"name": "Greek Yogurt Berry Bowl", "calories": 280, "protein": 22, "carbs": 28, "fat": 7, "isVeg": True, "reason": "High-protein and fiber-rich for satiety and steady energy.", "portionSize": "1 bowl"},
+            {"name": "Lentil Quinoa Salad", "calories": 350, "protein": 18, "carbs": 38, "fat": 10, "isVeg": True, "reason": "Plant protein plus complex carbs help support a balanced calorie target.", "portionSize": "1 large bowl"},
+            {"name": "Tofu Veggie Stir-Fry", "calories": 420, "protein": 25, "carbs": 32, "fat": 16, "isVeg": True, "reason": "Lean protein and vegetables support fullness without excess heaviness.", "portionSize": "1 plate"},
+            {"name": "Chickpea Oatmeal Bowl", "calories": 310, "protein": 16, "carbs": 36, "fat": 8, "isVeg": True, "reason": "Good fiber and carb balance for steady energy and recovery.", "portionSize": "1 bowl"},
+            {"name": "Avocado Egg Toast", "calories": 340, "protein": 20, "carbs": 24, "fat": 14, "isVeg": True, "reason": "A satisfying option with healthy fats and a solid protein base.", "portionSize": "2 slices"},
+            {"name": "Cottage Cheese Fruit Plate", "calories": 260, "protein": 24, "carbs": 20, "fat": 6, "isVeg": True, "reason": "Portable, high-protein, and easy to fit into a calorie-controlled day.", "portionSize": "1 serving"},
+        ]
+    else:
+        suggestions = [
+            {"name": "Chicken Rice Bowl", "calories": 420, "protein": 35, "carbs": 40, "fat": 10, "isVeg": False, "reason": "Lean protein and slow-digesting carbs make it ideal for appetite control.", "portionSize": "1 bowl"},
+            {"name": "Salmon Quinoa Plate", "calories": 480, "protein": 33, "carbs": 30, "fat": 22, "isVeg": False, "reason": "Balanced macros with healthy fats helps support satiety and recovery.", "portionSize": "1 plate"},
+            {"name": "Turkey Veggie Wrap", "calories": 370, "protein": 28, "carbs": 30, "fat": 11, "isVeg": False, "reason": "High protein and easy portion control for a busy day.", "portionSize": "1 wrap"},
+            {"name": "Lean Beef Stir-Fry", "calories": 460, "protein": 32, "carbs": 28, "fat": 18, "isVeg": False, "reason": "Protein-dense and filling while still being nutrient balanced.", "portionSize": "1 serving"},
+            {"name": "Egg and Oatmeal Combo", "calories": 340, "protein": 22, "carbs": 32, "fat": 12, "isVeg": False, "reason": "Simple, steady energy with a strong protein base.", "portionSize": "1 meal"},
+            {"name": "Greek Yogurt Protein Snack", "calories": 260, "protein": 24, "carbs": 18, "fat": 6, "isVeg": False, "reason": "Low-effort, high-protein option that supports muscle recovery.", "portionSize": "1 serving"},
+        ]
+
+    if "lose" in goal_key:
+        for item in suggestions:
+            item["reason"] = "Supports a calorie deficit while keeping protein high and meals satisfying."
+    elif "gain" in goal_key:
+        for item in suggestions:
+            item["reason"] = "Higher-calorie but still balanced for lean muscle and energy support."
+    else:
+        for item in suggestions:
+            item["reason"] = "A balanced choice for steady energy and consistent nutrition."
+
+    return {
+        "suggestions": suggestions,
+        "wellnessAdvice": "Keep water intake steady and aim for a balanced plate with protein, fiber, and a colorful vegetable source."
+    }
+
+
+def fallback_exercise_suggestions(goal, category):
+    goal_key = goal.lower()
+    base = [
+        {"name": "Brisk Walking", "category": "cardio", "description": "A simple low-impact cardio session that improves heart health and burns calories.", "duration": "20", "caloriesBurnedPerHour": 280, "suggestedSets": 1, "suggestedReps": "20-30 min", "restBetweenSets": "0s", "difficulty": "beginner", "context": "Great for sustainable energy and stress reduction.", "youtubeVideoId": "dQw4w9WgXcQ"},
+        {"name": "Bodyweight Squats", "category": "strength", "description": "Strengthens legs and glutes while building practical lower-body power.", "duration": "15", "caloriesBurnedPerHour": 320, "suggestedSets": 3, "suggestedReps": "12-15", "restBetweenSets": "45s", "difficulty": "beginner", "context": "Solid option for improving strength without high strain.", "youtubeVideoId": "vwALXgok6YI"},
+        {"name": "Yoga Flow", "category": "flexibility", "description": "Helps improve mobility, balance, and recovery after other exercise sessions.", "duration": "15", "caloriesBurnedPerHour": 180, "suggestedSets": 1, "suggestedReps": "15 min", "restBetweenSets": "0s", "difficulty": "beginner", "context": "Useful if stress is elevated and you need recovery-focused movement.", "youtubeVideoId": "v7AYKMP6rOE"},
+        {"name": "Dumbbell Press", "category": "strength", "description": "Builds upper-body strength and muscle control for overall fitness.", "duration": "15", "caloriesBurnedPerHour": 350, "suggestedSets": 3, "suggestedReps": "8-12", "restBetweenSets": "60s", "difficulty": "intermediate", "context": "Good for increasing strength while staying within a manageable workload.", "youtubeVideoId": "XnP71QhJw6s"},
+    ]
+
+    if category and category != 'all':
+        for item in base:
+            item['category'] = category
+
+    if "lose" in goal_key:
+        for item in base:
+            item['context'] = "Supports calorie burn and consistency without overloading the body."
+    elif "gain" in goal_key:
+        for item in base:
+            item['context'] = "Helps drive training quality and progressive strength while supporting muscle gain."
+    else:
+        for item in base:
+            item['context'] = "Keeps the plan balanced across cardio, strength, and recovery."
+
+    return {"suggestions": base[:4]}
+
 
 def get_real_youtube_id(exercise_name):
     query = urllib.parse.quote(exercise_name + " exercise tutorial")
@@ -47,23 +128,39 @@ def get_real_youtube_id(exercise_name):
 @app.route("/", methods=["GET"])
 def index():
     import random
+    import uuid
+
     topics = ["programming", "food", "animals", "space", "history", "everyday life", "technology", "sports", "music", "math", "science", "coffee", "cats", "dogs"]
+    tones = ["clean and punchy", "sarcastic", "playful", "quick one-liner", "absurd but clever"]
     topic = random.choice(topics)
+    tone = random.choice(tones)
+    unique_seed = uuid.uuid4().hex[:8]
+
+    prompt = (
+        f"Create one fresh, original, short joke about {topic}. "
+        f"Make it {tone}, highly readable, and different from common internet jokes. "
+        f"Use unique seed {unique_seed} to ensure it feels new. Return only the joke text."
+    )
+
     try:
         response = client.chat.completions.create(
             model=MODEL,
-            messages=[{"role": "user", "content": f"Tell me a brand new, unique, short, and funny joke about {topic}."}],
-            temperature=0.9,
-            max_tokens=60,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=1.1,
+            max_tokens=80,
         )
         joke = response.choices[0].message.content.strip()
-    except Exception as e:
-        joke = "Why did the AI cross the road? To optimize the other side!"
-        
+        joke = re.sub(r"^\s*(Here(?:'s| is)|Sure|Absolutely)\s*[:\-]?\s*", "", joke, flags=re.IGNORECASE)
+        if len(joke) < 12:
+            raise ValueError("Joke too short")
+    except Exception:
+        joke = random.choice(FALLBACK_JOKES)
+
     return jsonify({
-        "status": "success", 
+        "status": "success",
         "message": "CalPolice AI service is up and running! 🚀",
-        "generatedjoke": joke
+        "generatedjoke": joke,
+        "topic": topic,
     })
 
 @app.route("/health", methods=["GET"])
@@ -120,17 +217,19 @@ If you cannot identify a food item, make a reasonable estimate. Return ONLY the 
 
         content = response.choices[0].message.content
         content = clean_json(content)
+        if not content:
+            raise ValueError("Empty AI response")
         result = json.loads(content)
         return jsonify(result)
 
-    except json.JSONDecodeError:
+    except Exception as e:
+        print("[AI ANALYZE ERROR]", str(e), "RAW:", content if 'content' in locals() else "<none>")
         return jsonify({
             "estimatedCalories": 0,
             "error": "Could not parse meal",
-            "rawResponse": content
+            "feedback": "A fallback estimate was used because the AI response was malformed.",
+            "suggestions": ["Try a simpler meal description like '2 eggs, toast, and a banana'."]
         }), 422
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/suggest-foods", methods=["POST"])
@@ -206,12 +305,25 @@ Include a mix of breakfast, lunch, dinner and snack options. Return ONLY the JSO
         )
 
         content = response.choices[0].message.content
-        content = clean_json(content)
-        result = json.loads(content)
+        cleaned = clean_json(content)
+        if not cleaned:
+            raise ValueError("Empty suggestion response")
+
+        try:
+            result = json.loads(cleaned)
+        except json.JSONDecodeError:
+            cleaned = re.sub(r"^[^\{]*", "", cleaned)
+            cleaned = re.sub(r"[^\}\]]+$", "", cleaned)
+            result = json.loads(cleaned)
+
+        if "suggestions" not in result or not isinstance(result.get("suggestions"), list):
+            raise ValueError("Response missing suggestions list")
+
         return jsonify(result)
 
     except Exception as e:
-        return jsonify({"suggestions": [], "error": str(e)}), 500
+        print("[AI SUGGEST FOOD ERROR]", str(e), "RAW:", content if 'content' in locals() else "<none>")
+        return jsonify(fallback_food_suggestions(goal, is_veg)), 200
 
 
 @app.route("/suggest-exercises", methods=["POST"])
@@ -280,19 +392,28 @@ Make sure the suggestions are realistic and tailored to the goal. Use real YouTu
         )
 
         content = response.choices[0].message.content
-        content = clean_json(content)
-        result = json.loads(content)
-        
-        # Inject real YouTube IDs
-        if "suggestions" in result:
-            for ex in result["suggestions"]:
-                # Fetch a real ID based on the exercise name
-                ex["youtubeVideoId"] = get_real_youtube_id(ex.get("name", "workout"))
+        cleaned = clean_json(content)
+        if not cleaned:
+            raise ValueError("Empty exercise response")
+
+        try:
+            result = json.loads(cleaned)
+        except json.JSONDecodeError:
+            cleaned = re.sub(r"^[^\{]*", "", cleaned)
+            cleaned = re.sub(r"[^\}\]]+$", "", cleaned)
+            result = json.loads(cleaned)
+
+        if "suggestions" not in result or not isinstance(result.get("suggestions"), list):
+            raise ValueError("Response missing suggestions list")
+
+        for ex in result["suggestions"]:
+            ex["youtubeVideoId"] = get_real_youtube_id(ex.get("name", "workout"))
 
         return jsonify(result)
 
     except Exception as e:
-        return jsonify({"suggestions": [], "error": str(e)}), 500
+        print("[AI SUGGEST EXERCISES ERROR]", str(e), "RAW:", content if 'content' in locals() else "<none>")
+        return jsonify(fallback_exercise_suggestions(goal, category)), 200
 
 
 if __name__ == "__main__":
