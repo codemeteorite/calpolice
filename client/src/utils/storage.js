@@ -16,28 +16,6 @@ export const getRecommendationKey = (kind, userId) => {
     return `calpolice:${RECOMMENDATION_CACHE_VERSION}:${kind}:${scope}`;
 };
 
-export const getThemeKey = () => `calpolice:${RECOMMENDATION_CACHE_VERSION}:theme`;
-
-export const getStoredTheme = () => {
-    try {
-        const saved = localStorage.getItem(getThemeKey());
-        if (saved === 'light' || saved === 'dark') return saved;
-    } catch {
-        return 'light';
-    }
-    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-};
-
-export const applyStoredTheme = (theme = getStoredTheme()) => {
-    const nextTheme = theme === 'dark' ? 'dark' : 'light';
-    try {
-        document.documentElement.setAttribute('data-theme', nextTheme);
-    } catch {
-        // no-op
-    }
-    return nextTheme;
-};
-
 export const readFoodRecommendationCache = (userId) => {
     const storageKey = getRecommendationKey('food', userId);
     if (!storageKey) return { suggestions: [], wellnessAdvice: '' };

@@ -20,7 +20,7 @@ export default function Login() {
                     login(res.data.user, res.data.token);
                     navigate('/dashboard');
                 } catch (err) {
-                    setError('Auto-login failed. Please sign in manually.');
+                    setError(err.response?.data?.message || `Demo login failed${err.response ? ` (HTTP ${err.response.status})` : ''}. Check that the local API is running and reachable.`);
                 } finally {
                     setLoading(false);
                 }
@@ -37,7 +37,7 @@ export default function Login() {
             login(res.data.user, res.data.token);
             navigate('/dashboard');
         } catch (err) {
-            setError(err.response?.data?.message || 'Login failed');
+            setError(err.response?.data?.message || `Login failed${err.response ? ` (HTTP ${err.response.status})` : ''}. Check that the local API is running and reachable.`);
         } finally {
             setLoading(false);
         }

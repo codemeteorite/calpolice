@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { NavLink, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { applyStoredTheme, getStoredTheme, readExerciseRecommendationCache, readFoodRecommendationCache, saveExerciseRecommendationCache, saveFoodRecommendationCache } from '../../utils/storage';
+import { readExerciseRecommendationCache, readFoodRecommendationCache, saveExerciseRecommendationCache, saveFoodRecommendationCache } from '../../utils/storage';
 import Overview from './Overview';
 import MealLog from './MealLog';
 import FoodRecommendations from './FoodRecommendations';
@@ -26,17 +26,6 @@ export default function Dashboard() {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
     const userId = user?.id || user?._id || null;
-
-    const [theme, setTheme] = useState(getStoredTheme);
-
-    useEffect(() => {
-        const nextTheme = applyStoredTheme(theme);
-        try {
-            localStorage.setItem('calpolice:v1:theme', nextTheme);
-        } catch {
-            // ignore storage failures
-        }
-    }, [theme]);
 
     const [aiSuggestions, setAiSuggestions] = useState(() => {
         if (!userId) return [];
@@ -103,8 +92,8 @@ export default function Dashboard() {
                     <button
                         onClick={handleLogout}
                         style={{
-                            background: 'rgba(255,255,255,0.06)',
-                            border: '1px solid rgba(255,255,255,0.1)',
+                            background: '#f4f4f5',
+                            border: '1px solid #e4e4e7',
                             borderRadius: 8,
                             cursor: 'pointer',
                             fontSize: '0.8rem',
@@ -139,17 +128,6 @@ export default function Dashboard() {
                         <span>{item.label}</span>
                     </NavLink>
                 ))}
-
-                <div style={{ marginTop: 8, marginBottom: 16 }}>
-                    <button
-                        type="button"
-                        className="btn-secondary"
-                        onClick={() => setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'))}
-                        style={{ width: '100%', justifyContent: 'center', display: 'flex', alignItems: 'center', gap: 8 }}
-                    >
-                        <span>{theme === 'dark' ? '☀️ Light' : '🌙 Dark'}</span>
-                    </button>
-                </div>
 
                 <div className="sidebar-user" style={{ marginTop: 'auto' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>

@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import API from '../../api';
 
 export default function DayHistory() {
@@ -28,10 +28,13 @@ export default function DayHistory() {
         }
     }, []);
 
+    useEffect(() => {
+        fetchDayData(selectedDate);
+    }, [fetchDayData, selectedDate]);
+
     const handleDateChange = (e) => {
         const date = e.target.value;
         setSelectedDate(date);
-        fetchDayData(date);
     };
 
     const goYesterday = () => {
@@ -39,7 +42,6 @@ export default function DayHistory() {
         d.setDate(d.getDate() - 1);
         const newDate = d.toISOString().split('T')[0];
         setSelectedDate(newDate);
-        fetchDayData(newDate);
     };
 
     const goTomorrow = () => {
@@ -49,7 +51,6 @@ export default function DayHistory() {
         if (d.toISOString().split('T')[0] <= today) {
             const newDate = d.toISOString().split('T')[0];
             setSelectedDate(newDate);
-            fetchDayData(newDate);
         }
     };
 
@@ -60,15 +61,18 @@ export default function DayHistory() {
                 <p>View your nutrition and water intake for any day</p>
             </div>
 
-            <div style={{ marginBottom: 20, display: 'flex', gap: 10, alignItems: 'center' }}>
-                <button onClick={goYesterday} className="btn-secondary" style={{ padding: '8px 16px' }}>← Yesterday</button>
-                <input 
-                    type="date" 
-                    value={selectedDate} 
-                    onChange={handleDateChange} 
-                    style={{ padding: '8px 12px', borderRadius: 8, background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: 'white', cursor: 'pointer' }}
+            <div className="history-date-controls">
+                <button onClick={goYesterday} className="btn-secondary">← Yesterday</button>
+                <label className="history-date-label" htmlFor="history-date">Choose date</label>
+                <input
+                    id="history-date"
+                    className="form-input history-date-input"
+                    type="date"
+                    value={selectedDate}
+                    max={new Date().toISOString().split('T')[0]}
+                    onChange={handleDateChange}
                 />
-                <button onClick={goTomorrow} className="btn-secondary" style={{ padding: '8px 16px' }} disabled={selectedDate >= new Date().toISOString().split('T')[0]}>Tomorrow →</button>
+                <button onClick={goTomorrow} className="btn-secondary" disabled={selectedDate >= new Date().toISOString().split('T')[0]}>Tomorrow →</button>
             </div>
 
             {loading ? (
