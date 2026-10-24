@@ -26,6 +26,7 @@ app.use(limiter);
 // In production, restrict CORS to the deployed client URL
 const allowedOrigins = [
     'http://localhost:5173',
+    'http://127.0.0.1:5173',
     'http://localhost:4173',
     'http://localhost:5500',
     'http://127.0.0.1:5500',
@@ -59,25 +60,28 @@ app.use('/api/wellness', require('./routes/wellness'));
 app.use('/api/chat', require('./routes/chat'));
 
 // Health check
-app.get('/health', (req, res) => res.json({ status: 'CalPolice API running 🚀' }));
+app.get('/health', (req, res) => {
+    const databaseConnected = mongoose.connection.readyState === 1;
+    res.status(databaseConnected ? 200 : 503).json({
+        status: databaseConnected ? 'ok' : 'degraded',
+        database: databaseConnected ? 'connected' : 'disconnected',
+    });
+});
 
 const PORT = process.env.PORT || 5000;
 
-const startServer = () => {
+const startServer = async () => {
+    if (!process.env.MONGO_URI) {
+        throw new Error('MONGO_URI is not configured. Set it in server/.env before starting the API.');
+    }
+
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log('✅ MongoDB connected');
+
     app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
 };
 
-if (process.env.MONGO_URI) {
-    mongoose.connect(process.env.MONGO_URI)
-        .then(() => {
-            console.log('✅ MongoDB connected');
-            startServer();
-        })
-        .catch(err => {
-            console.error('⚠️ MongoDB connection failed, continuing without DB:', err.message);
-            startServer();
-        });
-} else {
-    console.warn('⚠️ MONGO_URI not set, starting server without MongoDB.');
-    startServer();
-}
+startServer().catch((err) => {
+    console.error('❌ Server startup failed:', err.message);
+    process.exit(1);
+});
